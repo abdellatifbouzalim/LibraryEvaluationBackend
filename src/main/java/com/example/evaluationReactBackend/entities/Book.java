@@ -30,11 +30,9 @@ public class Book {
     @Size(min = 10, max = 1000, message = "Summary must be between 10 and 1000 characters")
     private String summary;
 
-    // Relation One-to-Many avec Critique (Review)
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<Review> reviews;
 
-    // Relation Many-to-One avec Utilisateur (User)
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

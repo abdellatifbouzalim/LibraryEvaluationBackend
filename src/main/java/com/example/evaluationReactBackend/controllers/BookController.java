@@ -1,15 +1,18 @@
 package com.example.evaluationReactBackend.controllers;
 
 import com.example.evaluationReactBackend.dto.ApiResponse;
+import com.example.evaluationReactBackend.dto.responses.BookResponse;
 import com.example.evaluationReactBackend.entities.Book;
 import com.example.evaluationReactBackend.exceptions.BookNameExistsException;
 import com.example.evaluationReactBackend.exceptions.EntityNotFoundException;
 import com.example.evaluationReactBackend.services.interfaces.BookService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/books")
@@ -22,7 +25,7 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> saveBook(@RequestBody Book book) {
+    public ResponseEntity<ApiResponse> saveBook(@Valid @RequestBody Book book) {
         try {
             Book savedBook = bookService.saveBook(book);
             ApiResponse response = new ApiResponse(HttpStatus.CREATED.value(), "Book created successfully");
@@ -39,8 +42,8 @@ public class BookController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getBookById(@PathVariable Long id) {
         try {
-            Book book = bookService.getBookById(id);
-            return new ResponseEntity<>(book, HttpStatus.OK);
+            BookResponse bookResponse = bookService.getBookById(id);
+            return new ResponseEntity<>(bookResponse, HttpStatus.OK);
         } catch (EntityNotFoundException e) {
             ApiResponse response = new ApiResponse(HttpStatus.NOT_FOUND.value(), "Book not found");
             return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -48,13 +51,13 @@ public class BookController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Book>> getAllBooks() {
-        List<Book> books = bookService.getAllBooks();
-        return new ResponseEntity<>(books, HttpStatus.OK);
+    public ResponseEntity<List<BookResponse>> getAllBooks() {
+        List<BookResponse> books = bookService.getAllBooks();
+        return ResponseEntity.ok(books);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateBook(@PathVariable Long id, @RequestBody Book book) {
+    public ResponseEntity<ApiResponse> updateBook(@PathVariable Long id, @Valid @RequestBody Book book) {
         try {
             book.setId(id);
             bookService.updateBook(book);

@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(UserMapper.INSTANCE::toDto) // Utilisation du mapper pour convertir chaque User en UserResponse
+                .map(UserMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
     }
 

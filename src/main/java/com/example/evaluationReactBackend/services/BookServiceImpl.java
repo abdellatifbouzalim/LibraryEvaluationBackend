@@ -1,14 +1,18 @@
 package com.example.evaluationReactBackend.services;
 
+import com.example.evaluationReactBackend.dto.responses.BookResponse;
 import com.example.evaluationReactBackend.entities.Book;
 import com.example.evaluationReactBackend.exceptions.BookNameExistsException;
 import com.example.evaluationReactBackend.exceptions.EntityNotFoundException;
+import com.example.evaluationReactBackend.mappers.BookMapper;
+import com.example.evaluationReactBackend.mappers.LoanMapper;
 import com.example.evaluationReactBackend.repositories.BookRepository;
 import com.example.evaluationReactBackend.services.interfaces.BookService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -21,9 +25,8 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book saveBook(Book book) {
-        String bookName = book.getTitle(); // Assuming title is the name of the book
+        String bookName = book.getTitle();
 
-        // Check if a book with the same name already exists
         if (bookRepository.existsByTitle(bookName)) {
             throw new BookNameExistsException("A book with the name '" + bookName + "' already exists.");
         }
@@ -36,14 +39,18 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public Book getBookById(Long id) {
-        return bookRepository.findById(id)
+    public BookResponse getBookById(Long id) {
+        Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ID: " + id));
+        return BookMapper.INSTANCE.toDto(book);
     }
 
     @Override
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookResponse> getAllBooks() {
+        List<Book> books = bookRepository.findAll();
+        return books.stream()
+                .map(BookMapper.INSTANCE::toDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -51,14 +58,11 @@ public class BookServiceImpl implements BookService {
         Book existingBook = bookRepository.findById(updatedBook.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Book not found with ID: " + updatedBook.getId()));
 
-        // Update the fields of the existing book with the new values
         existingBook.setTitle(updatedBook.getTitle());
         existingBook.setAuthor(updatedBook.getAuthor());
         existingBook.setGenre(updatedBook.getGenre());
         existingBook.setSummary(updatedBook.getSummary());
-        // Update other fields as needed
 
-        // Save the updated book to the database
         bookRepository.save(existingBook);
     }
 

@@ -3,6 +3,8 @@ package com.example.evaluationReactBackend.entities;
 import lombok.Data;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+
 @Entity
 @Data
 public class Review {
@@ -11,15 +13,11 @@ public class Review {
     private Long id;
 
     private String comment;
-    private int rating;
-    private String date;
-
-    // Relation Many-to-One avec Livre (Book)
+    private int stars;
+    private LocalDate date;
     @ManyToOne
     @JoinColumn(name = "book_id")
     private Book book;
-
-    // Relation Many-to-One avec Utilisateur (User)
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

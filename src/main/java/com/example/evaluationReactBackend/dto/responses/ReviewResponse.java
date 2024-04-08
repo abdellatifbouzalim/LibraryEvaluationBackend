@@ -2,11 +2,13 @@ package com.example.evaluationReactBackend.dto.responses;
 
 import java.time.LocalDate;
 
+public record ReviewResponse (
 
-public record LoanResponse (
         Long id,
-        LocalDate borrowDate,
+        String comment,
+        int stars,
+        LocalDate date,
         BookResponse book,
-        UserResponse borrowingUser
+        UserResponse user
 
 ){}
